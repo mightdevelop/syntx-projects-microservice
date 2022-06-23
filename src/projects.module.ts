@@ -6,6 +6,7 @@ import { Project } from './entities/project.entity'
 import { ProjectUser } from './entities/project-user.entity'
 import { DataSource } from 'typeorm'
 import 'dotenv/config'
+import { InvitesModule } from './invites/invites.module'
 
 @Module({
     imports: [
@@ -13,6 +14,7 @@ import 'dotenv/config'
             envFilePath: [ `@${process.env.NODE_ENV}.env`, '@.env' ],
             isGlobal: true,
         }),
+        InvitesModule,
     ],
     controllers: [ ProjectsController ],
     providers: [
@@ -43,7 +45,7 @@ import 'dotenv/config'
             provide: 'PROJECT_USER_REPO',
             useFactory: (dataSource: DataSource) => dataSource.getRepository(ProjectUser),
             inject: [ 'DATA_SOURCE' ]
-        }
+        },
     ],
 })
 export class ProjectsModule {}

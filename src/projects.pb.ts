@@ -39,6 +39,33 @@ export interface DeleteProjectRequest {
   projectId: string;
 }
 
+export interface Invite {
+  id: string;
+  userId: string;
+  projectId: string;
+}
+
+export interface InviteByIdRequest {
+  inviteId: string;
+}
+
+export interface InvitesByUserIdRequest {
+  userId: string;
+}
+
+export interface InvitesByProjectIdRequest {
+  projectId: string;
+}
+
+export interface CreateInviteRequest {
+  projectId: string;
+  userId: string;
+}
+
+export interface DeleteInviteRequest {
+  inviteId: string;
+}
+
 export const PROJECTS_PACKAGE_NAME = "projects";
 
 export interface ProjectsServiceClient {
@@ -114,6 +141,73 @@ export function ProjectsServiceControllerMethods() {
 }
 
 export const PROJECTS_SERVICE_NAME = "ProjectsService";
+
+export interface InvitesServiceClient {
+  getInviteById(request: InviteByIdRequest): Observable<Invite>;
+
+  getInvitesByUserId(request: InvitesByUserIdRequest): Observable<Invite>;
+
+  getInvitesByProjectId(request: InvitesByProjectIdRequest): Observable<Invite>;
+
+  createInvite(request: CreateInviteRequest): Observable<Invite>;
+
+  deleteInvite(request: DeleteInviteRequest): Observable<Invite>;
+}
+
+export interface InvitesServiceController {
+  getInviteById(
+    request: InviteByIdRequest
+  ): Promise<Invite> | Observable<Invite> | Invite;
+
+  getInvitesByUserId(request: InvitesByUserIdRequest): Observable<Invite>;
+
+  getInvitesByProjectId(request: InvitesByProjectIdRequest): Observable<Invite>;
+
+  createInvite(
+    request: CreateInviteRequest
+  ): Promise<Invite> | Observable<Invite> | Invite;
+
+  deleteInvite(
+    request: DeleteInviteRequest
+  ): Promise<Invite> | Observable<Invite> | Invite;
+}
+
+export function InvitesServiceControllerMethods() {
+  return function (constructor: Function) {
+    const grpcMethods: string[] = [
+      "getInviteById",
+      "getInvitesByUserId",
+      "getInvitesByProjectId",
+      "createInvite",
+      "deleteInvite",
+    ];
+    for (const method of grpcMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method
+      );
+      GrpcMethod("InvitesService", method)(
+        constructor.prototype[method],
+        method,
+        descriptor
+      );
+    }
+    const grpcStreamMethods: string[] = [];
+    for (const method of grpcStreamMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method
+      );
+      GrpcStreamMethod("InvitesService", method)(
+        constructor.prototype[method],
+        method,
+        descriptor
+      );
+    }
+  };
+}
+
+export const INVITES_SERVICE_NAME = "InvitesService";
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
