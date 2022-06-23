@@ -10,6 +10,7 @@ import {
     CreateProjectRequest,
     UpdateProjectRequest,
     DeleteProjectRequest,
+    ProjectUserRequest,
 } from './projects.pb'
 import { ProjectsService } from './services/projects.service'
 import { concatMap, from, Observable } from 'rxjs'
@@ -48,6 +49,16 @@ export class ProjectsController implements ProjectsServiceController {
     @GrpcMethod(PROJECTS_SERVICE_NAME, 'deleteProject')
     public deleteProject(dto: DeleteProjectRequest): Observable<ProtoProject> {
         return from(this.projectsService.deleteProject(dto))
+    }
+
+    @GrpcMethod(PROJECTS_SERVICE_NAME, 'addUserToProject')
+    public async addUserToProject(dto: ProjectUserRequest): Promise<void> {
+        await this.projectsService.addUserToProject(dto)
+    }
+
+    @GrpcMethod(PROJECTS_SERVICE_NAME, 'removeUserFromProject')
+    public async removeUserFromProject(dto: ProjectUserRequest): Promise<void> {
+        await this.projectsService.removeUserFromProject(dto)
     }
 
 }

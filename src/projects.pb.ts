@@ -6,6 +6,8 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "projects";
 
+export interface Void {}
+
 export interface Project {
   id: string;
   name: string;
@@ -39,6 +41,11 @@ export interface DeleteProjectRequest {
   projectId: string;
 }
 
+export interface ProjectUserRequest {
+  projectId: string;
+  userId: string;
+}
+
 export interface Invite {
   id: string;
   userId: string;
@@ -62,8 +69,13 @@ export interface CreateInviteRequest {
   userId: string;
 }
 
-export interface DeleteInviteRequest {
+export interface DeleteInviteByIdRequest {
   inviteId: string;
+}
+
+export interface DeleteInviteByUserIdAndProjectIdRequest {
+  projectId: string;
+  userId: string;
 }
 
 export const PROJECTS_PACKAGE_NAME = "projects";
@@ -80,6 +92,10 @@ export interface ProjectsServiceClient {
   updateProject(request: UpdateProjectRequest): Observable<Project>;
 
   deleteProject(request: DeleteProjectRequest): Observable<Project>;
+
+  addUserToProject(request: ProjectUserRequest): Observable<Void>;
+
+  removeUserFromProject(request: ProjectUserRequest): Observable<Void>;
 }
 
 export interface ProjectsServiceController {
@@ -102,6 +118,14 @@ export interface ProjectsServiceController {
   deleteProject(
     request: DeleteProjectRequest
   ): Promise<Project> | Observable<Project> | Project;
+
+  addUserToProject(
+    request: ProjectUserRequest
+  ): Promise<Void> | Observable<Void> | Void;
+
+  removeUserFromProject(
+    request: ProjectUserRequest
+  ): Promise<Void> | Observable<Void> | Void;
 }
 
 export function ProjectsServiceControllerMethods() {
@@ -113,6 +137,8 @@ export function ProjectsServiceControllerMethods() {
       "createProject",
       "updateProject",
       "deleteProject",
+      "addUserToProject",
+      "removeUserFromProject",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
@@ -151,7 +177,11 @@ export interface InvitesServiceClient {
 
   createInvite(request: CreateInviteRequest): Observable<Invite>;
 
-  deleteInvite(request: DeleteInviteRequest): Observable<Invite>;
+  deleteInviteById(request: DeleteInviteByIdRequest): Observable<Invite>;
+
+  deleteInviteByUserIdAndProjectId(
+    request: DeleteInviteByUserIdAndProjectIdRequest
+  ): Observable<Invite>;
 }
 
 export interface InvitesServiceController {
@@ -167,8 +197,12 @@ export interface InvitesServiceController {
     request: CreateInviteRequest
   ): Promise<Invite> | Observable<Invite> | Invite;
 
-  deleteInvite(
-    request: DeleteInviteRequest
+  deleteInviteById(
+    request: DeleteInviteByIdRequest
+  ): Promise<Invite> | Observable<Invite> | Invite;
+
+  deleteInviteByUserIdAndProjectId(
+    request: DeleteInviteByUserIdAndProjectIdRequest
   ): Promise<Invite> | Observable<Invite> | Invite;
 }
 
@@ -179,7 +213,8 @@ export function InvitesServiceControllerMethods() {
       "getInvitesByUserId",
       "getInvitesByProjectId",
       "createInvite",
-      "deleteInvite",
+      "deleteInviteById",
+      "deleteInviteByUserIdAndProjectId",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

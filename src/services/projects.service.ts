@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { Project } from 'src/entities/project.entity'
+import { InvitesService } from 'src/invites/services/invites.service'
 import { Repository } from 'typeorm'
 import {
     ProjectByIdRequest,
@@ -10,6 +11,7 @@ import {
     DeleteProjectRequest,
     UpdateProjectRequest,
     ProjectsByLeadIdRequest,
+    ProjectUserRequest,
 } from '../projects.pb'
 
 
@@ -19,6 +21,7 @@ export class ProjectsService {
     constructor(
         @Inject('PROJECT_REPO') private readonly projectRepo: Repository<Project>,
         @Inject('PROJECT_USER_REPO') private readonly projectUserRepo: Repository<ProjectUser>,
+        private invitesService: InvitesService,
     ) {}
 
     public async getProjectById({ projectId }: ProjectByIdRequest): Promise<Project> {
@@ -61,6 +64,23 @@ export class ProjectsService {
         const project: Project = await this.projectRepo.findOneBy({ id: projectId })
         await this.projectRepo.delete(project)
         return project
+    }
+
+    public async addUserToProject(dto: ProjectUserRequest): Promise<ProjectUser> {
+        await this.invitesService.deleteInviteByUserIdAndProjectId(dto)
+
+        const projectUserRow: ProjectUser = new ProjectUser()
+        projectUserRow.projectId = dto.projectId
+        projectUserRow.userId = dto.userId
+        await this.projectUserRepo.save(projectUserRow)
+
+        return projectUserRow
+    }
+
+    public async removeUserFromProject(dto: ProjectUserRequest): Promise<ProjectUser> {
+        const projectUserRow: ProjectUser = await this.projectUserRepo.findOneBy(dto)
+        await this.projectUserRepo.delete(projectUserRow)
+        return projectUserRow
     }
 
 }

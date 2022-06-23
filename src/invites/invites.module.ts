@@ -5,8 +5,10 @@ import 'dotenv/config'
 import { Invite } from './entities/invite.entity'
 import { InvitesService } from './services/invites.service'
 import { ConfigService } from '@nestjs/config'
+import { ProjectUser } from 'src/entities/project-user.entity'
 
 @Module({
+    exports: [ InvitesService ],
     controllers: [ InvitesController ],
     providers: [
         InvitesService,
@@ -25,6 +27,11 @@ import { ConfigService } from '@nestjs/config'
                 ],
                 synchronize: true,
             }).initialize()
+        },
+        {
+            provide: 'PROJECT_USER_REPO',
+            useFactory: (dataSource: DataSource) => dataSource.getRepository(ProjectUser),
+            inject: [ 'DATA_SOURCE' ]
         },
         {
             provide: 'INVITE_REPO',

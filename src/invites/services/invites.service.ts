@@ -1,4 +1,5 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common'
+import { RpcException } from '@nestjs/microservices'
 import 'dotenv/config'
 import { Invite } from 'src/invites/entities/invite.entity'
 import { Repository } from 'typeorm'
@@ -7,7 +8,8 @@ import {
     InvitesByUserIdRequest,
     InvitesByProjectIdRequest,
     CreateInviteRequest,
-    DeleteInviteRequest,
+    DeleteInviteByIdRequest,
+    DeleteInviteByUserIdAndProjectIdRequest,
 } from '../../projects.pb'
 
 
@@ -19,19 +21,27 @@ export class InvitesService {
         @Inject('PROJECT_USER_REPO') private readonly projectUserRepo: Repository<Invite>,
     ) {}
 
-    public async getInviteById({ inviteId }: InviteByIdRequest): Promise<Invite> {
+    public async getInviteById(
+        { inviteId }: InviteByIdRequest
+    ): Promise<Invite> {
         return this.inviteRepo.findOneBy({ id: inviteId })
     }
 
-    public async getInvitesByUserId({ userId }: InvitesByUserIdRequest): Promise<Invite[]> {
+    public async getInvitesByUserId(
+        { userId }: InvitesByUserIdRequest
+    ): Promise<Invite[]> {
         return this.inviteRepo.findBy({ userId })
     }
 
-    public async getInvitesByProjectId({ projectId }: InvitesByProjectIdRequest): Promise<Invite[]> {
+    public async getInvitesByProjectId(
+        { projectId }: InvitesByProjectIdRequest
+    ): Promise<Invite[]> {
         return this.inviteRepo.findBy({ projectId })
     }
 
-    public async createInvite(dto: CreateInviteRequest): Promise<Invite> {
+    public async createInvite(
+        dto: CreateInviteRequest
+    ): Promise<Invite> {
         const isUserProjectParticipant = !!await this.projectUserRepo.findOneBy({
             projectId: dto.projectId,
             userId: dto.userId,
@@ -47,8 +57,22 @@ export class InvitesService {
         return invite
     }
 
-    public async deleteInvite({ inviteId }: DeleteInviteRequest): Promise<Invite> {
+    public async deleteInviteById(
+        { inviteId }: DeleteInviteByIdRequest
+    ): Promise<Invite> {
         const invite: Invite = await this.inviteRepo.findOneBy({ id: inviteId })
+        if (!invite)
+            throw new RpcException({ message: 'Invite not found' })
+        await this.inviteRepo.delete(invite)
+        return invite
+    }
+
+    public async deleteInviteByUserIdAndProjectId(
+        dto: DeleteInviteByUserIdAndProjectIdRequest
+    ): Promise<Invite> {
+        const invite: Invite = await this.inviteRepo.findOneBy(dto)
+        if (!invite)
+            throw new RpcException({ message: 'Invite not found' })
         await this.inviteRepo.delete(invite)
         return invite
     }
