@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common'
+import { RpcException } from '@nestjs/microservices'
 import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { Project } from 'src/entities/project.entity'
@@ -79,6 +80,9 @@ export class ProjectsService {
 
     public async removeUserFromProject(dto: ProjectUserRequest): Promise<ProjectUser> {
         const projectUserRow: ProjectUser = await this.projectUserRepo.findOneBy(dto)
+        if (!projectUserRow)
+            throw new RpcException({ message: 'User is not a project participant' })
+
         await this.projectUserRepo.delete(projectUserRow)
         return projectUserRow
     }
