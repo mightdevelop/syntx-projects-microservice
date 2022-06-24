@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { RpcException } from '@nestjs/microservices'
 import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { Project } from 'src/entities/project.entity'
@@ -12,7 +11,6 @@ import {
     DeleteProjectRequest,
     UpdateProjectRequest,
     ProjectsByLeadIdRequest,
-    ProjectUserRequest,
 } from '../projects.pb'
 
 
@@ -65,26 +63,6 @@ export class ProjectsService {
         const project: Project = await this.projectRepo.findOneBy({ id: projectId })
         await this.projectRepo.delete(project)
         return project
-    }
-
-    public async addUserToProject(dto: ProjectUserRequest): Promise<ProjectUser> {
-        await this.invitesService.deleteInviteByUserIdAndProjectId(dto)
-
-        const projectUserRow: ProjectUser = new ProjectUser()
-        projectUserRow.projectId = dto.projectId
-        projectUserRow.userId = dto.userId
-        await this.projectUserRepo.save(projectUserRow)
-
-        return projectUserRow
-    }
-
-    public async removeUserFromProject(dto: ProjectUserRequest): Promise<ProjectUser> {
-        const projectUserRow: ProjectUser = await this.projectUserRepo.findOneBy(dto)
-        if (!projectUserRow)
-            throw new RpcException({ message: 'User is not a project participant' })
-
-        await this.projectUserRepo.delete(projectUserRow)
-        return projectUserRow
     }
 
 }

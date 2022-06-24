@@ -14,12 +14,16 @@ import {
 } from './projects.pb'
 import { ProjectsService } from './services/projects.service'
 import { concatMap, from, Observable } from 'rxjs'
+import { ProjectUserService } from './services/project-user.service'
 
 @Controller()
 export class ProjectsController implements ProjectsServiceController {
 
     @Inject(ProjectsService)
     private readonly projectsService: ProjectsService
+
+    @Inject(ProjectUserService)
+    private readonly projectUserService: ProjectUserService
 
     @GrpcMethod(PROJECTS_SERVICE_NAME, 'getProjectById')
     public getProjectById(dto: ProjectByIdRequest): Observable<ProtoProject> {
@@ -53,12 +57,12 @@ export class ProjectsController implements ProjectsServiceController {
 
     @GrpcMethod(PROJECTS_SERVICE_NAME, 'addUserToProject')
     public async addUserToProject(dto: ProjectUserRequest): Promise<void> {
-        await this.projectsService.addUserToProject(dto)
+        await this.projectUserService.addUserToProject(dto)
     }
 
     @GrpcMethod(PROJECTS_SERVICE_NAME, 'removeUserFromProject')
     public async removeUserFromProject(dto: ProjectUserRequest): Promise<void> {
-        await this.projectsService.removeUserFromProject(dto)
+        await this.projectUserService.removeUserFromProject(dto)
     }
 
 }
