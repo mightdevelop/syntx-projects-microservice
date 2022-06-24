@@ -55,8 +55,8 @@ export class ProjectsService {
 
     public async updateProject(dto: UpdateProjectRequest): Promise<Project> {
         const project = await this.projectRepo.findOneBy({ id: dto.projectId })
-        project.name = dto.name
-        project.leadId = dto.leadId
+        project.name = dto.name || project.name
+        project.leadId = dto.leadId || project.leadId
         await this.projectRepo.save(project)
         return project
     }
