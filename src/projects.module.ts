@@ -7,6 +7,7 @@ import { ProjectUser } from './entities/project-user.entity'
 import { DataSource } from 'typeorm'
 import 'dotenv/config'
 import { InvitesModule } from './invites/invites.module'
+import { ProjectUserService } from './services/project-user.service'
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { InvitesModule } from './invites/invites.module'
     controllers: [ ProjectsController ],
     providers: [
         ProjectsService,
+        ProjectUserService,
         {
             inject: [ ConfigService ],
             provide: 'DATA_SOURCE',
