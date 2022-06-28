@@ -4,7 +4,7 @@ import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { InvitesService } from 'src/invites/services/invites.service'
 import { Repository } from 'typeorm'
-import { ProjectUserRequest } from '../projects.pb'
+import { Bool, ProjectIdAndUserId } from '../projects.pb'
 
 
 @Injectable()
@@ -15,7 +15,17 @@ export class ProjectUserService {
         private invitesService: InvitesService,
     ) {}
 
-    public async addUserToProject(dto: ProjectUserRequest): Promise<ProjectUser> {
+    public async getMutualProjectsIdsByUsersIds(usersIds: string[]): Promise<string[]> {
+        return (await this.projectUserRepo.find({
+            where: usersIds.map(userId => ({ userId }))
+        })).map(row => row.projectId) || []
+    }
+
+    public async isUserProjectParticipant(dto: ProjectIdAndUserId): Promise<Bool> {
+        return { bool: !!(await this.projectUserRepo.find({ where: dto })).length }
+    }
+
+    public async addUserToProject(dto: ProjectIdAndUserId): Promise<ProjectUser> {
         await this.invitesService.deleteInviteByUserIdAndProjectId(dto)
 
         const projectUserRow: ProjectUser = new ProjectUser()
@@ -26,8 +36,8 @@ export class ProjectUserService {
         return projectUserRow
     }
 
-    public async removeUserFromProject(dto: ProjectUserRequest): Promise<ProjectUser> {
-        const projectUserRow: ProjectUser = await this.projectUserRepo.findOneBy(dto)
+    public async removeUserFromProject(dto: ProjectIdAndUserId): Promise<ProjectUser> {
+        const projectUserRow: ProjectUser = await this.projectUserRepo.findOne({ where: dto })
         if (!projectUserRow)
             throw new RpcException({ message: 'User is not a project participant' })
 

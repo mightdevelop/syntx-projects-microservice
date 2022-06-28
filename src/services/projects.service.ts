@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common'
 import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { Project } from 'src/entities/project.entity'
-import { InvitesService } from 'src/invites/services/invites.service'
 import { Repository } from 'typeorm'
 import {
     ProjectByIdRequest,
@@ -11,7 +10,9 @@ import {
     DeleteProjectRequest,
     UpdateProjectRequest,
     ProjectsByLeadIdRequest,
+    UsersIds,
 } from '../projects.pb'
+import { ProjectUserService } from './project-user.service'
 
 
 @Injectable()
@@ -20,7 +21,7 @@ export class ProjectsService {
     constructor(
         @Inject('PROJECT_REPO') private readonly projectRepo: Repository<Project>,
         @Inject('PROJECT_USER_REPO') private readonly projectUserRepo: Repository<ProjectUser>,
-        private invitesService: InvitesService,
+        private readonly projectUserService: ProjectUserService,
     ) {}
 
     public async getProjectById({ projectId }: ProjectByIdRequest): Promise<Project> {
@@ -35,6 +36,11 @@ export class ProjectsService {
 
     public async getProjectsByLeadId({ leadId }: ProjectsByLeadIdRequest): Promise<Project[]> {
         return this.projectRepo.findBy({ leadId }) || []
+    }
+
+    public async getMutualProjectsByUsersIds({ usersIds }: UsersIds): Promise<Project[]> {
+        const projectsIds: string[] = await this.projectUserService.getMutualProjectsIdsByUsersIds(usersIds)
+        return this.projectRepo.find({ where: projectsIds.map(id => ({ id })) }) || []
     }
 
     public async createProject(dto: CreateProjectRequest): Promise<Project> {

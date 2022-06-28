@@ -8,6 +8,14 @@ export const protobufPackage = "projects";
 
 export interface Void {}
 
+export interface Bool {
+  bool: boolean;
+}
+
+export interface UsersIds {
+  usersIds: string[];
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -33,15 +41,15 @@ export interface CreateProjectRequest {
 
 export interface UpdateProjectRequest {
   projectId: string;
-  leadId: string;
-  name: string;
+  leadId?: string | undefined;
+  name?: string | undefined;
 }
 
 export interface DeleteProjectRequest {
   projectId: string;
 }
 
-export interface ProjectUserRequest {
+export interface ProjectIdAndUserId {
   projectId: string;
   userId: string;
 }
@@ -87,15 +95,19 @@ export interface ProjectsServiceClient {
 
   getProjectsByLeadId(request: ProjectsByLeadIdRequest): Observable<Project>;
 
+  getMutualProjectsByUsersIds(request: UsersIds): Observable<Project>;
+
+  isUserProjectParticipant(request: ProjectIdAndUserId): Observable<Bool>;
+
   createProject(request: CreateProjectRequest): Observable<Project>;
 
   updateProject(request: UpdateProjectRequest): Observable<Project>;
 
   deleteProject(request: DeleteProjectRequest): Observable<Project>;
 
-  addUserToProject(request: ProjectUserRequest): Observable<Void>;
+  addUserToProject(request: ProjectIdAndUserId): Observable<Void>;
 
-  removeUserFromProject(request: ProjectUserRequest): Observable<Void>;
+  removeUserFromProject(request: ProjectIdAndUserId): Observable<Void>;
 }
 
 export interface ProjectsServiceController {
@@ -106,6 +118,12 @@ export interface ProjectsServiceController {
   getProjectsByUserId(request: ProjectsByUserIdRequest): Observable<Project>;
 
   getProjectsByLeadId(request: ProjectsByLeadIdRequest): Observable<Project>;
+
+  getMutualProjectsByUsersIds(request: UsersIds): Observable<Project>;
+
+  isUserProjectParticipant(
+    request: ProjectIdAndUserId
+  ): Promise<Bool> | Observable<Bool> | Bool;
 
   createProject(
     request: CreateProjectRequest
@@ -120,11 +138,11 @@ export interface ProjectsServiceController {
   ): Promise<Project> | Observable<Project> | Project;
 
   addUserToProject(
-    request: ProjectUserRequest
+    request: ProjectIdAndUserId
   ): Promise<Void> | Observable<Void> | Void;
 
   removeUserFromProject(
-    request: ProjectUserRequest
+    request: ProjectIdAndUserId
   ): Promise<Void> | Observable<Void> | Void;
 }
 
@@ -134,6 +152,8 @@ export function ProjectsServiceControllerMethods() {
       "getProjectById",
       "getProjectsByUserId",
       "getProjectsByLeadId",
+      "getMutualProjectsByUsersIds",
+      "isUserProjectParticipant",
       "createProject",
       "updateProject",
       "deleteProject",
