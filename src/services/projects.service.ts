@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { Project } from 'src/entities/project.entity'
 import { Repository } from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm'
 import {
     ProjectByIdRequest,
     ProjectsByUserIdRequest,
@@ -19,8 +20,8 @@ import { ProjectUserService } from './project-user.service'
 export class ProjectsService {
 
     constructor(
-        @Inject('PROJECT_REPO') private readonly projectRepo: Repository<Project>,
-        @Inject('PROJECT_USER_REPO') private readonly projectUserRepo: Repository<ProjectUser>,
+        @InjectRepository(Project) private readonly projectRepo: Repository<Project>,
+        @InjectRepository(ProjectUser) private readonly projectUserRepo: Repository<ProjectUser>,
         private readonly projectUserService: ProjectUserService,
     ) {}
 

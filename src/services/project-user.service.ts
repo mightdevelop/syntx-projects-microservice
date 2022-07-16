@@ -1,5 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { RpcException } from '@nestjs/microservices'
+import { InjectRepository } from '@nestjs/typeorm'
 import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { InvitesService } from 'src/invites/services/invites.service'
@@ -11,7 +12,7 @@ import { Bool, ProjectIdAndUserId } from '../projects.pb'
 export class ProjectUserService {
 
     constructor(
-        @Inject('PROJECT_USER_REPO') private readonly projectUserRepo: Repository<ProjectUser>,
+        @InjectRepository(ProjectUser)  private readonly projectUserRepo: Repository<ProjectUser>,
         private invitesService: InvitesService,
     ) {}
 

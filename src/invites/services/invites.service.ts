@@ -1,5 +1,6 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common'
+import { ConflictException, Injectable } from '@nestjs/common'
 import { RpcException } from '@nestjs/microservices'
+import { InjectRepository } from '@nestjs/typeorm'
 import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { Invite } from 'src/invites/entities/invite.entity'
@@ -18,8 +19,8 @@ import {
 export class InvitesService {
 
     constructor(
-        @Inject('INVITE_REPO') private readonly inviteRepo: Repository<Invite>,
-        @Inject('PROJECT_USER_REPO') private readonly projectUserRepo: Repository<ProjectUser>,
+        @InjectRepository(Invite) private readonly inviteRepo: Repository<Invite>,
+        @InjectRepository(ProjectUser) private readonly projectUserRepo: Repository<ProjectUser>,
     ) {}
 
     public async getInviteById(

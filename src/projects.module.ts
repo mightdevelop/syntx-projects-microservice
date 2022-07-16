@@ -4,10 +4,11 @@ import { ProjectsService } from './services/projects.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { Project } from './entities/project.entity'
 import { ProjectUser } from './entities/project-user.entity'
-import { DataSource } from 'typeorm'
 import 'dotenv/config'
 import { InvitesModule } from './invites/invites.module'
 import { ProjectUserService } from './services/project-user.service'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { Invite } from './invites/entities/invite.entity'
 
 @Module({
     imports: [
@@ -16,15 +17,9 @@ import { ProjectUserService } from './services/project-user.service'
             isGlobal: true,
         }),
         InvitesModule,
-    ],
-    controllers: [ ProjectsController ],
-    providers: [
-        ProjectsService,
-        ProjectUserService,
-        {
+        TypeOrmModule.forRootAsync({
             inject: [ ConfigService ],
-            provide: 'DATA_SOURCE',
-            useFactory: async (config: ConfigService) => new DataSource({
+            useFactory: async (config: ConfigService) => ({
                 type: 'postgres',
                 host: config.get('POSTGRES_HOST'),
                 port: +config.get('POSTGRES_PORT'),
@@ -34,20 +29,20 @@ import { ProjectUserService } from './services/project-user.service'
                 entities: [
                     Project,
                     ProjectUser,
+                    Invite,
                 ],
                 synchronize: true,
-            }).initialize()
-        },
-        {
-            provide: 'PROJECT_REPO',
-            useFactory: (dataSource: DataSource) => dataSource.getRepository(Project),
-            inject: [ 'DATA_SOURCE' ]
-        },
-        {
-            provide: 'PROJECT_USER_REPO',
-            useFactory: (dataSource: DataSource) => dataSource.getRepository(ProjectUser),
-            inject: [ 'DATA_SOURCE' ]
-        },
+            })
+        }),
+        TypeOrmModule.forFeature([
+            Project,
+            ProjectUser,
+        ])
+    ],
+    controllers: [ ProjectsController ],
+    providers: [
+        ProjectsService,
+        ProjectUserService,
     ],
 })
 export class ProjectsModule {}
