@@ -13,6 +13,7 @@ import {
     DeleteInviteByIdRequest,
     DeleteInviteByUserIdAndProjectIdRequest,
 } from '../../projects.pb'
+import { Status } from '@grpc/grpc-js/build/src/constants'
 
 
 @Injectable()
@@ -64,7 +65,7 @@ export class InvitesService {
     ): Promise<Invite> {
         const invite: Invite = await this.inviteRepo.findOneBy({ id: inviteId })
         if (!invite)
-            throw new RpcException({ message: 'Invite not found' })
+            throw new RpcException({ code: Status.NOT_FOUND, message: 'Invite not found' })
         await this.inviteRepo.delete(invite)
         return invite
     }
@@ -74,7 +75,7 @@ export class InvitesService {
     ): Promise<Invite> {
         const invite: Invite = await this.inviteRepo.findOneBy(dto)
         if (!invite)
-            throw new RpcException({ message: 'Invite not found' })
+            throw new RpcException({ code: Status.NOT_FOUND, message: 'Invite not found' })
         await this.inviteRepo.delete(invite)
         return invite
     }

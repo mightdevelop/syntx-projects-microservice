@@ -1,3 +1,4 @@
+import { Status } from '@grpc/grpc-js/build/src/constants'
 import { Injectable } from '@nestjs/common'
 import { RpcException } from '@nestjs/microservices'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -40,7 +41,7 @@ export class ProjectUserService {
     public async removeUserFromProject(dto: ProjectIdAndUserId): Promise<ProjectUser> {
         const projectUserRow: ProjectUser = await this.projectUserRepo.findOne({ where: dto })
         if (!projectUserRow)
-            throw new RpcException({ message: 'User is not a project participant' })
+            throw new RpcException({ code: Status.NOT_FOUND, message: 'User is not a project participant' })
 
         await this.projectUserRepo.delete(projectUserRow)
         return projectUserRow
