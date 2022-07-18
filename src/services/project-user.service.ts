@@ -20,7 +20,7 @@ export class ProjectUserService {
     public async getMutualProjectsIdsByUsersIds(usersIds: string[]): Promise<string[]> {
         return (await this.projectUserRepo.find({
             where: usersIds.map(userId => ({ userId }))
-        })).map(row => row.projectId) || []
+        })).map(raw => raw.projectId) || []
     }
 
     public async isUserProjectParticipant(dto: ProjectIdAndUserId): Promise<Bool> {

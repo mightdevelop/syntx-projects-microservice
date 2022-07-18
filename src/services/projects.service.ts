@@ -32,7 +32,7 @@ export class ProjectsService {
     public async getProjectsByUserId({ userId }: ProjectsByUserIdRequest): Promise<Project[]> {
         const projectUserRows: ProjectUser[] = await this.projectUserRepo.findBy({ userId })
         if (projectUserRows.length === 0) return []
-        return this.projectRepo.find({ where: projectUserRows.map(row => ({ id: row.projectId })) })
+        return this.projectRepo.find({ where: projectUserRows.map(raw => ({ id: raw.projectId })) })
     }
 
     public async getProjectsByLeadId({ leadId }: ProjectsByLeadIdRequest): Promise<Project[]> {
