@@ -12,26 +12,27 @@ export interface Bool {
   bool: boolean;
 }
 
-export interface UsersIds {
-  usersIds: string[];
-}
-
 export interface Project {
   id: string;
   name: string;
   leadId: string;
 }
 
-export interface ProjectByIdRequest {
+export interface ProjectId {
   projectId: string;
 }
 
-export interface ProjectsByUserIdRequest {
-  userId: string;
+export interface SearchProjectsParams {
+  leadId?: string | undefined;
+  projectName?: string | undefined;
+  usersIds: string[];
+  projectsIds: string[];
+  limit?: number | undefined;
+  offset?: number | undefined;
 }
 
-export interface ProjectsByLeadIdRequest {
-  leadId: string;
+export interface UserId {
+  userId: string;
 }
 
 export interface CreateProjectRequest {
@@ -45,10 +46,6 @@ export interface UpdateProjectRequest {
   name?: string | undefined;
 }
 
-export interface DeleteProjectRequest {
-  projectId: string;
-}
-
 export interface ProjectIdAndUserId {
   projectId: string;
   userId: string;
@@ -60,42 +57,24 @@ export interface Invite {
   projectId: string;
 }
 
-export interface InviteByIdRequest {
+export interface InviteId {
   inviteId: string;
 }
 
-export interface InvitesByUserIdRequest {
-  userId: string;
-}
-
-export interface InvitesByProjectIdRequest {
-  projectId: string;
-}
-
-export interface CreateInviteRequest {
-  projectId: string;
-  userId: string;
-}
-
-export interface DeleteInviteByIdRequest {
-  inviteId: string;
-}
-
-export interface DeleteInviteByUserIdAndProjectIdRequest {
-  projectId: string;
-  userId: string;
+export interface SearchInvitesParams {
+  userId?: string | undefined;
+  projectId?: string | undefined;
+  invitesIds: string[];
+  limit?: number | undefined;
+  offset?: number | undefined;
 }
 
 export const PROJECTS_PACKAGE_NAME = "projects";
 
 export interface ProjectsServiceClient {
-  getProjectById(request: ProjectByIdRequest): Observable<Project>;
+  getProjectById(request: ProjectId): Observable<Project>;
 
-  getProjectsByUserId(request: ProjectsByUserIdRequest): Observable<Project>;
-
-  getProjectsByLeadId(request: ProjectsByLeadIdRequest): Observable<Project>;
-
-  getMutualProjectsByUsersIds(request: UsersIds): Observable<Project>;
+  searchProjects(request: SearchProjectsParams): Observable<Project>;
 
   isUserProjectParticipant(request: ProjectIdAndUserId): Observable<Bool>;
 
@@ -103,7 +82,7 @@ export interface ProjectsServiceClient {
 
   updateProject(request: UpdateProjectRequest): Observable<Project>;
 
-  deleteProject(request: DeleteProjectRequest): Observable<Project>;
+  deleteProject(request: ProjectId): Observable<Project>;
 
   addUserToProject(request: ProjectIdAndUserId): Observable<Void>;
 
@@ -112,14 +91,10 @@ export interface ProjectsServiceClient {
 
 export interface ProjectsServiceController {
   getProjectById(
-    request: ProjectByIdRequest
+    request: ProjectId
   ): Promise<Project> | Observable<Project> | Project;
 
-  getProjectsByUserId(request: ProjectsByUserIdRequest): Observable<Project>;
-
-  getProjectsByLeadId(request: ProjectsByLeadIdRequest): Observable<Project>;
-
-  getMutualProjectsByUsersIds(request: UsersIds): Observable<Project>;
+  searchProjects(request: SearchProjectsParams): Observable<Project>;
 
   isUserProjectParticipant(
     request: ProjectIdAndUserId
@@ -134,7 +109,7 @@ export interface ProjectsServiceController {
   ): Promise<Project> | Observable<Project> | Project;
 
   deleteProject(
-    request: DeleteProjectRequest
+    request: ProjectId
   ): Promise<Project> | Observable<Project> | Project;
 
   addUserToProject(
@@ -150,9 +125,7 @@ export function ProjectsServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
       "getProjectById",
-      "getProjectsByUserId",
-      "getProjectsByLeadId",
-      "getMutualProjectsByUsersIds",
+      "searchProjects",
       "isUserProjectParticipant",
       "createProject",
       "updateProject",
@@ -189,40 +162,36 @@ export function ProjectsServiceControllerMethods() {
 export const PROJECTS_SERVICE_NAME = "ProjectsService";
 
 export interface InvitesServiceClient {
-  getInviteById(request: InviteByIdRequest): Observable<Invite>;
+  getInviteById(request: InviteId): Observable<Invite>;
 
-  getInvitesByUserId(request: InvitesByUserIdRequest): Observable<Invite>;
+  searchInvites(request: SearchInvitesParams): Observable<Invite>;
 
-  getInvitesByProjectId(request: InvitesByProjectIdRequest): Observable<Invite>;
+  createInvite(request: ProjectIdAndUserId): Observable<Invite>;
 
-  createInvite(request: CreateInviteRequest): Observable<Invite>;
-
-  deleteInviteById(request: DeleteInviteByIdRequest): Observable<Invite>;
+  deleteInviteById(request: InviteId): Observable<Invite>;
 
   deleteInviteByUserIdAndProjectId(
-    request: DeleteInviteByUserIdAndProjectIdRequest
+    request: ProjectIdAndUserId
   ): Observable<Invite>;
 }
 
 export interface InvitesServiceController {
   getInviteById(
-    request: InviteByIdRequest
+    request: InviteId
   ): Promise<Invite> | Observable<Invite> | Invite;
 
-  getInvitesByUserId(request: InvitesByUserIdRequest): Observable<Invite>;
-
-  getInvitesByProjectId(request: InvitesByProjectIdRequest): Observable<Invite>;
+  searchInvites(request: SearchInvitesParams): Observable<Invite>;
 
   createInvite(
-    request: CreateInviteRequest
+    request: ProjectIdAndUserId
   ): Promise<Invite> | Observable<Invite> | Invite;
 
   deleteInviteById(
-    request: DeleteInviteByIdRequest
+    request: InviteId
   ): Promise<Invite> | Observable<Invite> | Invite;
 
   deleteInviteByUserIdAndProjectId(
-    request: DeleteInviteByUserIdAndProjectIdRequest
+    request: ProjectIdAndUserId
   ): Promise<Invite> | Observable<Invite> | Invite;
 }
 
@@ -230,8 +199,7 @@ export function InvitesServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
       "getInviteById",
-      "getInvitesByUserId",
-      "getInvitesByProjectId",
+      "searchInvites",
       "createInvite",
       "deleteInviteById",
       "deleteInviteByUserIdAndProjectId",

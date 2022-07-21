@@ -4,14 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm'
 import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { Invite } from 'src/invites/entities/invite.entity'
-import { Repository } from 'typeorm'
+import { In, Repository } from 'typeorm'
 import {
-    InviteByIdRequest,
-    InvitesByUserIdRequest,
-    InvitesByProjectIdRequest,
-    CreateInviteRequest,
-    DeleteInviteByIdRequest,
-    DeleteInviteByUserIdAndProjectIdRequest,
+    SearchInvitesParams,
+    InviteId,
+    ProjectIdAndUserId,
 } from '../../projects.pb'
 import { Status } from '@grpc/grpc-js/build/src/constants'
 
@@ -25,25 +22,25 @@ export class InvitesService {
     ) {}
 
     public async getInviteById(
-        { inviteId }: InviteByIdRequest
+        { inviteId }: InviteId
     ): Promise<Invite> {
         return this.inviteRepo.findOneBy({ id: inviteId })
     }
 
-    public async getInvitesByUserId(
-        { userId }: InvitesByUserIdRequest
-    ): Promise<Invite[]> {
-        return this.inviteRepo.findBy({ userId })
-    }
-
-    public async getInvitesByProjectId(
-        { projectId }: InvitesByProjectIdRequest
-    ): Promise<Invite[]> {
-        return this.inviteRepo.findBy({ projectId })
+    public async searchInvites(searchParams: SearchInvitesParams): Promise<Invite[]> {
+        return this.inviteRepo.find({
+            where: {
+                id: In(searchParams.invitesIds),
+                userId: searchParams.userId,
+                projectId: searchParams.projectId,
+            },
+            take: searchParams.limit,
+            skip: searchParams.offset,
+        })
     }
 
     public async createInvite(
-        dto: CreateInviteRequest
+        dto: ProjectIdAndUserId
     ): Promise<Invite> {
         const isUserProjectParticipant = !!await this.projectUserRepo.findOneBy({
             projectId: dto.projectId,
@@ -61,7 +58,7 @@ export class InvitesService {
     }
 
     public async deleteInviteById(
-        { inviteId }: DeleteInviteByIdRequest
+        { inviteId }: InviteId
     ): Promise<Invite> {
         const invite: Invite = await this.inviteRepo.findOneBy({ id: inviteId })
         if (!invite)
@@ -71,7 +68,7 @@ export class InvitesService {
     }
 
     public async deleteInviteByUserIdAndProjectId(
-        dto: DeleteInviteByUserIdAndProjectIdRequest
+        dto: ProjectIdAndUserId
     ): Promise<Invite> {
         const invite: Invite = await this.inviteRepo.findOneBy(dto)
         if (!invite)

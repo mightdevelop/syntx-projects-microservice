@@ -4,15 +4,12 @@ import {
     PROJECTS_SERVICE_NAME,
     Project as ProtoProject,
     ProjectsServiceController,
-    ProjectByIdRequest,
-    ProjectsByUserIdRequest,
-    ProjectsByLeadIdRequest,
+    ProjectId,
     CreateProjectRequest,
     UpdateProjectRequest,
-    DeleteProjectRequest,
     ProjectIdAndUserId,
     Bool,
-    UsersIds,
+    SearchProjectsParams,
 } from './projects.pb'
 import { ProjectsService } from './services/projects.service'
 import { concatMap, from, Observable } from 'rxjs'
@@ -28,23 +25,13 @@ export class ProjectsController implements ProjectsServiceController {
     private readonly projectUserService: ProjectUserService
 
     @GrpcMethod(PROJECTS_SERVICE_NAME, 'getProjectById')
-    public getProjectById(dto: ProjectByIdRequest): Observable<ProtoProject> {
+    public getProjectById(dto: ProjectId): Observable<ProtoProject> {
         return from(this.projectsService.getProjectById(dto))
     }
 
-    @GrpcMethod(PROJECTS_SERVICE_NAME, 'getProjectsByUserId')
-    public getProjectsByUserId(dto: ProjectsByUserIdRequest): Observable<ProtoProject> {
-        return from(this.projectsService.getProjectsByUserId(dto)).pipe(concatMap(x => x))
-    }
-
-    @GrpcMethod(PROJECTS_SERVICE_NAME, 'getProjectsByLeadId')
-    public getProjectsByLeadId(dto: ProjectsByLeadIdRequest): Observable<ProtoProject> {
-        return from(this.projectsService.getProjectsByLeadId(dto)).pipe(concatMap(x => x))
-    }
-
-    @GrpcMethod(PROJECTS_SERVICE_NAME, 'getMutualProjectsByUsersIds')
-    public getMutualProjectsByUsersIds(dto: UsersIds): Observable<ProtoProject> {
-        return from(this.projectsService.getMutualProjectsByUsersIds(dto)).pipe(concatMap(x => x))
+    @GrpcMethod(PROJECTS_SERVICE_NAME, 'searchProjects')
+    public searchProjects(dto: SearchProjectsParams): Observable<ProtoProject> {
+        return from(this.projectsService.searchProjects(dto)).pipe(concatMap(x => x))
     }
 
     @GrpcMethod(PROJECTS_SERVICE_NAME, 'isUserProjectParticipant')
@@ -63,7 +50,7 @@ export class ProjectsController implements ProjectsServiceController {
     }
 
     @GrpcMethod(PROJECTS_SERVICE_NAME, 'deleteProject')
-    public deleteProject(dto: DeleteProjectRequest): Observable<ProtoProject> {
+    public deleteProject(dto: ProjectId): Observable<ProtoProject> {
         return from(this.projectsService.deleteProject(dto))
     }
 
