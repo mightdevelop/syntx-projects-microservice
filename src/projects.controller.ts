@@ -10,7 +10,7 @@ import {
     ProjectIdAndUserId,
     Bool,
     SearchProjectsParams,
-} from './projects.pb'
+} from './pb/projects.pb'
 import { ProjectsService } from './services/projects.service'
 import { concatMap, from, Observable } from 'rxjs'
 import { ProjectUserService } from './services/project-user.service'

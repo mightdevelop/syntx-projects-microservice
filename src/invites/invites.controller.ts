@@ -7,7 +7,7 @@ import {
     SearchInvitesParams,
     InviteId,
     ProjectIdAndUserId,
-} from '../projects.pb'
+} from '../pb/projects.pb'
 import { concatMap, from, Observable } from 'rxjs'
 import { InvitesService } from './services/invites.service'
 

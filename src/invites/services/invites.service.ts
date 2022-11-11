@@ -9,7 +9,7 @@ import {
     SearchInvitesParams,
     InviteId,
     ProjectIdAndUserId,
-} from '../../projects.pb'
+} from '../../pb/projects.pb'
 import { Status } from '@grpc/grpc-js/build/src/constants'
 
 

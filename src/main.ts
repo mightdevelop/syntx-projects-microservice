@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import { Transport } from '@nestjs/microservices'
 import { join } from 'path'
 import { ProjectsModule } from './projects.module'
-import { PROJECTS_PACKAGE_NAME } from './projects.pb'
+import { PROJECTS_PACKAGE_NAME } from './pb/projects.pb'
 
 async function bootstrap() {
     const app = await NestFactory.createMicroservice(

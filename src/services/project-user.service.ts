@@ -6,7 +6,7 @@ import 'dotenv/config'
 import { ProjectUser } from 'src/entities/project-user.entity'
 import { InvitesService } from 'src/invites/services/invites.service'
 import { Repository } from 'typeorm'
-import { Bool, ProjectIdAndUserId } from '../projects.pb'
+import { Bool, ProjectIdAndUserId } from '../pb/projects.pb'
 
 
 @Injectable()
