@@ -121,21 +121,7 @@ export class ProjectsService {
                 throw new RpcException(error)
             })
         this.projectsEventsService.createProjectEvent({ project })
-
-        const projectIdAndUserId = new ProjectUser()
-        projectIdAndUserId.projectId = project.id
-        projectIdAndUserId.userId = project.leadId
-        await this.projectUserRepo
-            .save(projectIdAndUserId)
-            .catch(err => {
-                const error: Error = {
-                    code: Status.UNAVAILABLE,
-                    message: err,
-                }
-                this.projectsEventsService.addUserToProject({ error, ...projectIdAndUserId })
-                throw new RpcException(error)
-            })
-        this.projectsEventsService.addUserToProject(projectIdAndUserId)
+        await this.projectUserService.addUserToProject({ projectId: project.id, userId: project.leadId })
         return project
     }
 
