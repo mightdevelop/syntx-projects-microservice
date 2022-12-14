@@ -87,9 +87,11 @@ export interface ProjectsEventsServiceClient {
 
   deleteProjectEvent(request: ProjectEvent): Observable<Empty>;
 
-  addUserToProject(request: AddOrRemoveUserFromProjectEvent): Observable<Empty>;
+  addUserToProjectEvent(
+    request: AddOrRemoveUserFromProjectEvent
+  ): Observable<Empty>;
 
-  removeUserFromProject(
+  removeUserFromProjectEvent(
     request: AddOrRemoveUserFromProjectEvent
   ): Observable<Empty>;
 }
@@ -107,9 +109,9 @@ export interface ProjectsEventsServiceController {
 
   deleteProjectEvent(request: ProjectEvent): void;
 
-  addUserToProject(request: AddOrRemoveUserFromProjectEvent): void;
+  addUserToProjectEvent(request: AddOrRemoveUserFromProjectEvent): void;
 
-  removeUserFromProject(request: AddOrRemoveUserFromProjectEvent): void;
+  removeUserFromProjectEvent(request: AddOrRemoveUserFromProjectEvent): void;
 }
 
 export function ProjectsEventsServiceControllerMethods() {
@@ -121,8 +123,8 @@ export function ProjectsEventsServiceControllerMethods() {
       "createProjectEvent",
       "updateProjectEvent",
       "deleteProjectEvent",
-      "addUserToProject",
-      "removeUserFromProject",
+      "addUserToProjectEvent",
+      "removeUserFromProjectEvent",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(
@@ -159,7 +161,7 @@ export interface InvitesEventsServiceClient {
 
   createInviteEvent(request: InviteEvent): Observable<Empty>;
 
-  deleteInviteByIdEvent(request: InviteEvent): Observable<Empty>;
+  deleteInviteEvent(request: InviteEvent): Observable<Empty>;
 }
 
 export interface InvitesEventsServiceController {
@@ -169,7 +171,7 @@ export interface InvitesEventsServiceController {
 
   createInviteEvent(request: InviteEvent): void;
 
-  deleteInviteByIdEvent(request: InviteEvent): void;
+  deleteInviteEvent(request: InviteEvent): void;
 }
 
 export function InvitesEventsServiceControllerMethods() {
@@ -178,7 +180,7 @@ export function InvitesEventsServiceControllerMethods() {
       "getInviteByIdEvent",
       "searchInvitesEvent",
       "createInviteEvent",
-      "deleteInviteByIdEvent",
+      "deleteInviteEvent",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

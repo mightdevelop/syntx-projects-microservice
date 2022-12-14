@@ -9,6 +9,9 @@ import { InvitesModule } from './invites/invites.module'
 import { ProjectUserService } from './services/project-user.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Invite } from './invites/entities/invite.entity'
+import { ClientsModule, Transport } from '@nestjs/microservices'
+import { EVENTBUS_PACKAGE_NAME } from './pb/projects-events.pb'
+import { join } from 'path'
 
 @Module({
     imports: [
@@ -34,6 +37,19 @@ import { Invite } from './invites/entities/invite.entity'
                 synchronize: true,
             })
         }),
+        ClientsModule.register([
+            {
+                name: EVENTBUS_PACKAGE_NAME,
+                transport: Transport.GRPC,
+                options: {
+                    url: '127.0.0.1:50057',
+                    package: EVENTBUS_PACKAGE_NAME,
+                    protoPath: join(
+                        __dirname, '..', 'node_modules', 'syntx-protos', 'eventbus', 'projects-events.proto'
+                    ),
+                }
+            }
+        ]),
         TypeOrmModule.forFeature([
             Project,
             ProjectUser,

@@ -7,6 +7,7 @@ import {
     SearchInvitesParams,
     InviteId,
     ProjectIdAndUserId,
+    DeleteInviteRequest,
 } from '../pb/projects.pb'
 import { concatMap, from, Observable } from 'rxjs'
 import { InvitesService } from './services/invites.service'
@@ -32,14 +33,9 @@ export class InvitesController implements InvitesServiceController {
         return from(this.invitesService.createInvite(dto))
     }
 
-    @GrpcMethod(INVITES_SERVICE_NAME, 'deleteInviteById')
-    public deleteInviteById(dto: InviteId): Observable<ProtoInvite> {
-        return from(this.invitesService.deleteInviteById(dto))
-    }
-
-    @GrpcMethod(INVITES_SERVICE_NAME, 'deleteInviteByUserIdAndProjectId')
-    public deleteInviteByUserIdAndProjectId(dto: ProjectIdAndUserId): Observable<ProtoInvite> {
-        return from(this.invitesService.deleteInviteByUserIdAndProjectId(dto))
+    @GrpcMethod(INVITES_SERVICE_NAME, 'deleteInvite')
+    public deleteInvite(dto: DeleteInviteRequest): Observable<ProtoInvite> {
+        return from(this.invitesService.deleteInvite(dto))
     }
 
 }

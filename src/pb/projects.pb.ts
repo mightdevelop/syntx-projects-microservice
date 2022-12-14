@@ -61,6 +61,12 @@ export interface InviteId {
   inviteId: string;
 }
 
+export interface DeleteInviteRequest {
+  data?:
+    | { $case: "projectIdAndUserId"; projectIdAndUserId: ProjectIdAndUserId }
+    | { $case: "inviteId"; inviteId: string };
+}
+
 export interface SearchInvitesParams {
   userId?: string | undefined;
   projectId?: string | undefined;
@@ -168,11 +174,7 @@ export interface InvitesServiceClient {
 
   createInvite(request: ProjectIdAndUserId): Observable<Invite>;
 
-  deleteInviteById(request: InviteId): Observable<Invite>;
-
-  deleteInviteByUserIdAndProjectId(
-    request: ProjectIdAndUserId
-  ): Observable<Invite>;
+  deleteInvite(request: DeleteInviteRequest): Observable<Invite>;
 }
 
 export interface InvitesServiceController {
@@ -186,12 +188,8 @@ export interface InvitesServiceController {
     request: ProjectIdAndUserId
   ): Promise<Invite> | Observable<Invite> | Invite;
 
-  deleteInviteById(
-    request: InviteId
-  ): Promise<Invite> | Observable<Invite> | Invite;
-
-  deleteInviteByUserIdAndProjectId(
-    request: ProjectIdAndUserId
+  deleteInvite(
+    request: DeleteInviteRequest
   ): Promise<Invite> | Observable<Invite> | Invite;
 }
 
@@ -201,8 +199,7 @@ export function InvitesServiceControllerMethods() {
       "getInviteById",
       "searchInvites",
       "createInvite",
-      "deleteInviteById",
-      "deleteInviteByUserIdAndProjectId",
+      "deleteInvite",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(

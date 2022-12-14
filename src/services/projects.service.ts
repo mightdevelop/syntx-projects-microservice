@@ -133,7 +133,7 @@ export class ProjectsService {
                     code: Status.UNAVAILABLE,
                     message: err,
                 }
-                this.projectsEventsService.updateProjectEvent({ error, project })
+                this.projectsEventsService.updateProjectEvent({ error, project: { id: dto.projectId } })
                 throw new RpcException(error)
             })
         if (!project) {
@@ -141,7 +141,7 @@ export class ProjectsService {
                 code: Status.NOT_FOUND,
                 message: 'Project not found',
             }
-            this.projectsEventsService.updateProjectEvent({ error, project })
+            this.projectsEventsService.updateProjectEvent({ error, project: { id: dto.projectId } })
             throw new RpcException(error)
         }
         project.name = dto.name || project.name
@@ -168,7 +168,7 @@ export class ProjectsService {
                     code: Status.UNAVAILABLE,
                     message: err,
                 }
-                this.projectsEventsService.updateProjectEvent({ error, project })
+                this.projectsEventsService.deleteProjectEvent({ error, project: { id: projectId } })
                 throw new RpcException(error)
             })
         if (!project) {
@@ -176,7 +176,7 @@ export class ProjectsService {
                 code: Status.NOT_FOUND,
                 message: 'Project not found',
             }
-            this.projectsEventsService.updateProjectEvent({ error, project })
+            this.projectsEventsService.deleteProjectEvent({ error, project: { id: projectId } })
             throw new RpcException(error)
         }
         await this.projectRepo
@@ -186,7 +186,7 @@ export class ProjectsService {
                     code: Status.UNAVAILABLE,
                     message: err,
                 }
-                this.projectsEventsService.deleteProjectEvent({ error, project })
+                this.projectsEventsService.deleteProjectEvent({ error, project: { id: projectId } })
                 throw new RpcException(error)
             })
         this.projectsEventsService.deleteProjectEvent({ project })

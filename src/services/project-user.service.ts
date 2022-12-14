@@ -39,7 +39,9 @@ export class ProjectUserService {
     }
 
     public async addUserToProject(dto: ProjectIdAndUserId): Promise<ProjectUser> {
-        await this.invitesService.deleteInviteByUserIdAndProjectId(dto)
+        await this.invitesService.deleteInvite({
+            data: { $case: 'projectIdAndUserId', projectIdAndUserId: dto }
+        })
 
         const projectUser: ProjectUser = new ProjectUser()
         projectUser.projectId = dto.projectId
@@ -51,10 +53,10 @@ export class ProjectUserService {
                     code: Status.UNAVAILABLE,
                     message: err,
                 }
-                this.projectsEventsService.addUserToProject({ error, ...projectUser })
+                this.projectsEventsService.addUserToProjectEvent({ error, ...projectUser })
                 throw new RpcException(error)
             })
-        this.projectsEventsService.addUserToProject(projectUser)
+        this.projectsEventsService.addUserToProjectEvent(projectUser)
 
         return projectUser
     }
@@ -67,7 +69,7 @@ export class ProjectUserService {
                 code: Status.NOT_FOUND,
                 message: 'Project not found',
             }
-            this.projectsEventsService.removeUserFromProject({ error, ...projectUser })
+            this.projectsEventsService.removeUserFromProjectEvent({ error, ...projectUser })
             throw new RpcException(error)
         }
         await this.projectUserRepo
@@ -77,10 +79,10 @@ export class ProjectUserService {
                     code: Status.UNAVAILABLE,
                     message: err,
                 }
-                this.projectsEventsService.removeUserFromProject({ error, ...projectUser })
+                this.projectsEventsService.removeUserFromProjectEvent({ error, ...projectUser })
                 throw new RpcException(error)
             })
-        this.projectsEventsService.removeUserFromProject(projectUser)
+        this.projectsEventsService.removeUserFromProjectEvent(projectUser)
         return projectUser
     }
 
